@@ -1,0 +1,79 @@
+<mat-card>
+
+  <mat-card-subtitle>
+    <img id="logo"
+         src="https://www.mfgday.com/sites/default/files/styles/event_logo_thumb_large/public/events_logos/TECH_Logo_Main_TransparentBkgd_Purple.png?itok=vEYO6yeE"/>
+    <br>
+    3D Print Request Form
+  </mat-card-subtitle>
+
+  <form (submit)="onFormSubmit(dataForm)" #dataForm="ngForm">
+    <mat-card-content>
+      <mat-form-field appearance="outline">
+        <mat-label>T#</mat-label>
+        <label>
+          <input type="text" name="TNum" ngModel matInput value="" required pattern="T[0-9]{8}">
+        </label>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <label>
+          <input type="text" name="Name" ngModel matInput value="" required>
+        </label>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <label>
+          <input type="email" name="Email" ngModel matInput value="" required pattern=".*@(students.)?tntech.edu">
+        </label>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Purpose</mat-label>
+        <mat-select name="Purpose" ngModel required>
+          <mat-option value="class">Class Project</mat-option>
+          <mat-option value="senior">Senior Design Project</mat-option>
+          <mat-option value="capstone">Capstone Project</mat-option>
+          <mat-option value="other">Other</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Note</mat-label>
+        <label>
+            <textarea type="text" name="Note" ngModel matInput value="" matTextareaAutosize>
+            </textarea>
+        </label>
+      </mat-form-field>
+
+      <input type="file" accept=".stl" #filesInput style="display:none;" (change)="onFileAdded()">
+
+      <mat-expansion-panel #filesPanel class="myExpansionPanel">
+        <mat-expansion-panel-header>
+          Files ({{files.size}})
+        </mat-expansion-panel-header>
+        <div *ngFor="let f of files | keyvalue ">
+          <p style="display: inline-block">{{f.value.name}}</p>
+          <p style="display: inline-block; float: right;">
+            {{getFileSize(f.value)}} kb
+          </p>
+        </div>
+      </mat-expansion-panel>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button type="button" mat-button (click)="onClearFilesButtonClicked()" color="warn">
+        CLEAR FILES
+      </button>
+      <span style="display:inline-block; flex: 1 1 auto;"></span>
+      <button type="button" mat-flat-button (click)="onAddFileButtonClicked()">
+        ADD FILE
+      </button>
+      <button type="submit" mat-flat-button color="accent">
+        SUBMIT
+      </button>
+    </mat-card-actions>
+
+  </form>
+
+</mat-card>
