@@ -1,6 +1,10 @@
 import {Component, ViewChild} from '@angular/core';
 import {MatExpansionPanel} from "@angular/material";
 import {NgForm} from "@angular/forms";
+import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
+import {Observable, Subject} from "rxjs";
+
+const url = 'http://localhost:8000/upload';
 
 @Component({
   selector: 'app-print-form',
@@ -13,6 +17,8 @@ export class PrintFormComponent {
   @ViewChild('filesInput') filesInput;
 
   public files = new Map<string, File>();
+
+  constructor(private http: HttpClient) {}
 
   getFileSize(file) {
     return (file.size/1024).toFixed(2);
@@ -57,7 +63,23 @@ export class PrintFormComponent {
         alert("Please add at least one file")
         return;
       }
+
+      this.upload();
     }
+  }
+
+  upload() {
+    const status: { [key: string]: { progress: Observable<number> } } = {};
+
+    this.files.forEach(file => {
+      const formData: FormData = new FormData();
+      formData.append('file', file, file.name);
+
+      const req = new HttpRequest('POST', url, formData, {
+        reportProgress: true
+      });
+    });
+
   }
 
 }
