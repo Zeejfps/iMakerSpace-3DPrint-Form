@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {Observable, Subject} from "rxjs";
 import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
+import {catchError} from "rxjs/operators";
 
 const url = 'http://localhost:3000/upload';
 const uploadLimit = 5;
@@ -19,6 +20,9 @@ export class UploadService {
   }
 
   public addFile(file: File) {
+    if (this.files.size >= uploadLimit)
+      return;
+
     if (this.files.has(file.name))
       return;
 
@@ -30,7 +34,7 @@ export class UploadService {
   }
 
   upload() {
-    const status: { [key: string]: { progress: Observable<number> } } = {};
+    const status = new Map<string, Observable<number>>();
 
     this.files.forEach((file: File) => {
       const formData: FormData = new FormData();
@@ -42,7 +46,9 @@ export class UploadService {
 
       const progress = new Subject<number>();
 
-      this.http.request(req).subscribe(event => {
+      const test = this.http.request(req);
+
+      /*this.http.request(req).subscribe(event => {
         if (event.type === HttpEventType.UploadProgress) {
           const percentDone = Math.round(100 * event.loaded / event.total);
           progress.next(percentDone);
@@ -50,7 +56,9 @@ export class UploadService {
         else if (event instanceof HttpResponse) {
           progress.complete();
         }
-      });
+      }, err => {
+        console.log(err);
+      });*/
     });
 
     return status;

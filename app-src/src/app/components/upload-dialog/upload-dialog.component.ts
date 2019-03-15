@@ -10,7 +10,7 @@ import {forkJoin, Observable} from "rxjs";
 })
 export class UploadDialogComponent implements OnInit {
 
-  progress: { [key:string]: { progress: Observable<number>}};
+  progress: Map<string, Observable<number>>;
   canBeClosed = true;
   primaryButtonText = 'Upload';
   showCancelButton = true;
@@ -24,7 +24,6 @@ export class UploadDialogComponent implements OnInit {
 
   ngOnInit() {
     this.progress = this.uploadService.upload();
-    console.log("init? " + this.progress);
 
     let allProgressObservables = [];
     for (let key in this.progress) {

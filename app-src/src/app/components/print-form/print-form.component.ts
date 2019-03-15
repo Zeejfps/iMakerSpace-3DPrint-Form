@@ -16,7 +16,7 @@ export class PrintFormComponent {
 
   constructor(
     private uploadDialog: MatDialog,
-    private uploadServce: UploadService
+    private uploadService: UploadService
   ) {}
 
   getFileSize(file) {
@@ -28,25 +28,23 @@ export class PrintFormComponent {
     if (fileList.length == 0)
       return;
 
-    const f = fileList[0] as File;
-    if (f == null)
-      return;
+    for (let i = 0; i < fileList.length; i++) {
+      this.uploadService.addFile(fileList[i]);
+    }
 
-    this.uploadServce.addFile(f);
-
-    if (this.uploadServce.files.size == 1) {
+    if (this.uploadService.files.size == 1) {
       this.filesPanel.expanded = true;
     }
   }
 
   onClearFilesButtonClicked() {
     this.filesInput.nativeElement.value = null;
-    this.uploadServce.clearFiles();
+    this.uploadService.clearFiles();
     this.filesPanel.expanded = false;
   }
 
   onAddFileButtonClicked() {
-    if (!this.uploadServce.canAddFile()) {
+    if (!this.uploadService.canAddFile()) {
       alert("Maximum number files reached");
       return;
     }
@@ -55,11 +53,13 @@ export class PrintFormComponent {
 
   onFormSubmit(form: NgForm) {
     if (form.valid) {
-      if (this.uploadServce.files.size == 0) {
+      if (this.uploadService.files.size == 0) {
         alert("Please add at least one file")
         return;
       }
-      this.uploadDialog.open(UploadDialogComponent, {});
+      this.uploadDialog.open(UploadDialogComponent, {
+        width: '600px',
+      });
     }
 
   }
