@@ -4,7 +4,7 @@ import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/com
 import {catchError} from "rxjs/operators";
 
 const url = 'http://localhost:3000/upload';
-const uploadLimit = 5;
+const uploadLimit = 10;
 
 @Injectable({
   providedIn: 'root'
@@ -46,10 +46,9 @@ export class UploadService {
 
       const progress = new Subject<number>();
 
-      const test = this.http.request(req);
-
-      /*this.http.request(req).subscribe(event => {
+      this.http.request(req).subscribe(event => {
         if (event.type === HttpEventType.UploadProgress) {
+          console.log("UploadProgress Event: " + (100 * event.loaded / event.total));
           const percentDone = Math.round(100 * event.loaded / event.total);
           progress.next(percentDone);
         }
@@ -58,8 +57,12 @@ export class UploadService {
         }
       }, err => {
         console.log(err);
-      });*/
+      });
+
+      status.set(file.name, progress);
+
     });
+
 
     return status;
   }

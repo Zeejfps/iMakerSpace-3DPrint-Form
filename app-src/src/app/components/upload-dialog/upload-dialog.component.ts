@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {MatDialogRef} from "@angular/material";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {CanColor, MatButton, MatDialogRef} from "@angular/material";
 import {UploadService} from "../../services/upload.service";
 import {forkJoin, Observable} from "rxjs";
 
@@ -10,12 +10,10 @@ import {forkJoin, Observable} from "rxjs";
 })
 export class UploadDialogComponent implements OnInit {
 
-  progress: Map<string, Observable<number>>;
-  canBeClosed = true;
-  primaryButtonText = 'Upload';
-  showCancelButton = true;
-  uploading = false;
-  uploadSuccessful = false;
+  progress = new Map<string, number>();
+  done: boolean;
+
+  @ViewChild('closeButton') closeButton : MatButton;
 
   constructor(
     private dialogRef: MatDialogRef<UploadDialogComponent>,
@@ -23,37 +21,20 @@ export class UploadDialogComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.progress = this.uploadService.upload();
+    this.done = false;
+    const progressMap = this.uploadService.upload();
 
     let allProgressObservables = [];
-    for (let key in this.progress) {
-      allProgressObservables.push(this.progress[key].progress);
-    }
+    progressMap.forEach((value, key) => {
+      value.subscribe((v) => {
+        this.progress[key] = v;
+      });
+      allProgressObservables.push(value);
+    });
 
-    // Adjust the state variables
-
-    // The OK-button should have the text "Finish" now
-    this.primaryButtonText = 'Finish';
-
-    // The dialog should not be closed while uploading
-    this.canBeClosed = false;
-    this.dialogRef.disableClose = true;
-
-    // Hide the cancel-button
-    this.showCancelButton = false;
-
-    // When all progress-observables are completed...
     forkJoin(allProgressObservables).subscribe(end => {
-      // ... the dialog can be closed again...
-      this.canBeClosed = true;
-      this.dialogRef.disableClose = false;
-
-      // ... the upload was successful...
-      this.uploadSuccessful = true;
-
-      // ... and the component is no longer uploading
-      this.uploading = false;
+      //this.dialogRef.close();
+      this.done = true;
     });
   }
-
 }
