@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "babel-node server.js"
   },
   "author": "Evgeny Vasilyev",
   "license": "ISC",
@@ -15,6 +15,9 @@
     "formidable": "^1.2.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
     "nodemon": "^1.18.10"
   }
 }

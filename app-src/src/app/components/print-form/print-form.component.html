@@ -50,9 +50,9 @@
 
       <mat-expansion-panel #filesPanel class="myExpansionPanel">
         <mat-expansion-panel-header>
-          Files ({{files.size}})
+          Files ({{uploadServce.files.size}})
         </mat-expansion-panel-header>
-        <div *ngFor="let f of files | keyvalue ">
+        <div *ngFor="let f of uploadServce.files | keyvalue ">
           <p style="display: inline-block">{{f.value.name}}</p>
           <p style="display: inline-block; float: right;">
             {{getFileSize(f.value)}} kb

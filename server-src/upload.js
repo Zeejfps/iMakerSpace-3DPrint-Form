@@ -1,4 +1,4 @@
-const IncomingForm = require("formidable");
+import IncomingForm from "formidable";
 
 module.exports = function upload(req, res) {
     const form = IncomingForm();

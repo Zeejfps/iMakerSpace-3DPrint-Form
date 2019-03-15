@@ -1,0 +1,14 @@
+<div class="container" fxLayout="column" fxLayoutAlign="space-evenly stretch">
+  <mat-dialog-content fxFlex>
+    <mat-list>
+      <mat-list-item *ngFor="let f of uploadService.files | keyvalue">
+        <h4 mat-line>{{f.value.name}}</h4>
+      </mat-list-item>
+    </mat-list>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="actions">
+    <button *ngIf="showCancelButton" mat-button mat-dialog-close>Cancel</button>
+    <button mat-raised-button color="primary" [disabled]="!canBeClosed" (click)="closeDialog()">{{primaryButtonText}}</button>
+  </mat-dialog-actions>
+</div>

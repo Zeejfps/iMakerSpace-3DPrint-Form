@@ -1,10 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
-import {MatExpansionPanel} from "@angular/material";
+import {MatDialog, MatExpansionPanel} from "@angular/material";
 import {NgForm} from "@angular/forms";
-import {HttpClient, HttpEventType, HttpRequest, HttpResponse} from "@angular/common/http";
-import {Observable, Subject} from "rxjs";
-
-const url = 'http://localhost:8000/upload';
+import {UploadDialogComponent} from "../upload-dialog/upload-dialog.component";
+import {UploadService} from "../../services/upload.service";
 
 @Component({
   selector: 'app-print-form',
@@ -16,9 +14,10 @@ export class PrintFormComponent {
   @ViewChild('filesPanel') filesPanel : MatExpansionPanel;
   @ViewChild('filesInput') filesInput;
 
-  public files = new Map<string, File>();
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private uploadDialog: MatDialog,
+    private uploadServce: UploadService
+  ) {}
 
   getFileSize(file) {
     return (file.size/1024).toFixed(2);
@@ -33,24 +32,21 @@ export class PrintFormComponent {
     if (f == null)
       return;
 
-    if (this.files.has(f.name))
-      return;
+    this.uploadServce.addFile(f);
 
-    this.files.set(f.name, f);
-
-    if (this.files.size == 1) {
+    if (this.uploadServce.files.size == 1) {
       this.filesPanel.expanded = true;
     }
   }
 
   onClearFilesButtonClicked() {
     this.filesInput.nativeElement.value = null;
-    this.files.clear();
+    this.uploadServce.clearFiles();
     this.filesPanel.expanded = false;
   }
 
   onAddFileButtonClicked() {
-    if (this.files.size >= 5) {
+    if (!this.uploadServce.canAddFile()) {
       alert("Maximum number files reached");
       return;
     }
@@ -59,26 +55,12 @@ export class PrintFormComponent {
 
   onFormSubmit(form: NgForm) {
     if (form.valid) {
-      if (this.files.size == 0) {
+      if (this.uploadServce.files.size == 0) {
         alert("Please add at least one file")
         return;
       }
-
-      this.upload();
+      this.uploadDialog.open(UploadDialogComponent, {});
     }
-  }
-
-  upload() {
-    const status: { [key: string]: { progress: Observable<number> } } = {};
-
-    this.files.forEach(file => {
-      const formData: FormData = new FormData();
-      formData.append('file', file, file.name);
-
-      const req = new HttpRequest('POST', url, formData, {
-        reportProgress: true
-      });
-    });
 
   }
 

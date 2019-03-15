@@ -1,6 +1,6 @@
-const express = require("express");
-const cors = require("cors");
-const upload = require("./upload");
+import express from "express";
+import cors from "cors";
+import upload from "./upload";
 
 const corsOptions = {
     origin: '*',
